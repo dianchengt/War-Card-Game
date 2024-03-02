@@ -1,0 +1,221 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class Main {
+
+    /**
+     * The ranks of the cards for this game to be sent to the deck.
+     */
+    private static final String[] RANKS = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+
+    /**
+     * The suits of the cards for this game to be sent to the deck.
+     */
+    private static final String[] SUITS = {"♠", "♥", "♦", "♣"};
+
+    /**
+     * The values of the cards for this game to be sent to the deck.
+     */
+    private static final int[] POINT_VALUES = {14, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+
+    public static void main(String[] args) {
+        //beginningDeck is the Deck we start with.  When we deal, it gets split into two
+        //Decks for each player
+        Scanner scan = new Scanner(System.in);
+        Deck beginningDeck = new Deck(RANKS, SUITS, POINT_VALUES);
+        beginningDeck.shuffle();
+        ArrayList<Card> deckAsList = beginningDeck.getDeck();
+        String[] playerRanks = new String[26];
+        String[] playerSuits = new String[26];
+        int[] playerPointValues = new int[26];
+        for (int i = 0; i < deckAsList.size() / 2; i++) {
+            playerRanks[i] = deckAsList.get(i).rank();
+            playerSuits[i] = deckAsList.get(i).suit();
+            playerPointValues[i] = deckAsList.get(i).pointValue();
+        }
+        String[] computerRanks = new String[26];
+        String[] computerSuits = new String[26];
+        int[] computerPointValues = new int[26];
+        int indexCounter = 0;
+        for (int i = deckAsList.size() / 2; i < deckAsList.size(); i++) {
+            computerRanks[indexCounter] = deckAsList.get(i).rank();
+            computerSuits[indexCounter] = deckAsList.get(i).suit();
+            computerPointValues[indexCounter] = deckAsList.get(i).pointValue();
+            indexCounter++;
+        }
+        Deck playerDeck = new Deck(playerPointValues, playerRanks, playerSuits);
+        Deck computerDeck = new Deck(computerPointValues, computerRanks, computerSuits);
+        ArrayList<Card> playerDeckList = playerDeck.getDeck();
+        ArrayList<Card> playerWonCards = new ArrayList<>();
+        ArrayList<Card> computerDeckList = computerDeck.getDeck();
+        ArrayList<Card> computerWonCards = new ArrayList<>();
+        ArrayList<Card> winnerCards = new ArrayList<>();
+
+        System.out.println("It's a war of cards!");
+        System.out.println("Deck sizes: " + playerDeckList.size() + " (yours) vs. " + computerDeckList.size() + " (computer's)");
+        String winner;
+        while(true){
+            if(playerDeckList.isEmpty()){
+                int counter = 0;
+                for(int i = 0; i < playerWonCards.size(); i ++){
+                    playerDeckList.add(playerWonCards.get(counter));
+                    counter ++;
+                }
+                playerWonCards.clear();
+                shuffler(playerDeckList);
+            }
+            if(computerDeckList.isEmpty()){
+                int counter = 0;
+                for(int i = 0; i < computerWonCards.size(); i ++){
+                    computerDeckList.add(computerWonCards.get(counter));
+                    counter ++;
+                }
+                computerWonCards.clear();
+                shuffler(computerDeckList);
+            }
+            if(playerDeckList.isEmpty() && playerWonCards.isEmpty()){
+                winner = "computer";
+                break;
+            }
+            if(computerDeckList.isEmpty() && computerWonCards.isEmpty()){
+                winner  = "player";
+                break;
+            }
+            System.out.print("\nPress 'ENTER' to fight another battle or 'S' to shuffle your deck!: ");
+            String ans = scan.nextLine();
+            if(ans.equals("S")){
+                shuffler(playerDeckList);
+                System.out.println("Your deck has been shuffled!");
+            }else{
+                Card playerCard = playerDeckList.remove(0);
+                System.out.println("You drew a " + playerCard);
+                Card computerCard = computerDeckList.remove(0);
+                System.out.println("The computer draw a " + computerCard);
+                boolean finishedComparing = false;
+                while(!finishedComparing){
+                    if (playerCard.pointValue() > computerCard.pointValue()) {
+                        playerWonCards.add(playerCard);
+                        playerWonCards.add(computerCard);
+                        int totalPlayerSize = playerDeckList.size() + playerWonCards.size();
+                        int totalComputerSize = computerDeckList.size() + computerWonCards.size();
+                        System.out.println("You won 2 cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
+                        /* I used these print statements to check the cards in each list; they helped a lot with debugging */
+                        System.out.println("Player's current deck: " + playerDeckList);
+                        System.out.println("Computer's current deck: " + computerDeckList);
+                        System.out.println("Player's won deck: " + playerWonCards);
+                        System.out.println("Computer's won deck: " + computerWonCards);
+                        finishedComparing = true;
+                    } else if (playerCard.pointValue() < computerCard.pointValue()) {
+                        computerWonCards.add(playerCard);
+                        computerWonCards.add(computerCard);
+                        int totalPlayerSize = playerDeckList.size() + playerWonCards.size();
+                        int totalComputerSize = computerDeckList.size() + computerWonCards.size();
+                        System.out.println("The computer won 2 cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
+                        /* I used these print statements to check the cards in each list; they helped a lot with debugging */
+                        System.out.println("Player's current deck: " + playerDeckList);
+                        System.out.println("Computer's current deck: " + computerDeckList);
+                        System.out.println("Player's won deck: " + playerWonCards);
+                        System.out.println("Computer's won deck: " + computerWonCards);
+                        finishedComparing = true;
+                    } else if (playerCard.pointValue() == computerCard.pointValue()) {
+                        System.out.println("Prepare for war!");
+                        System.out.println("You and the computer both put down three cards!");
+                        if(playerDeckList.size() < 4){
+                            shuffler(playerWonCards);
+                            int counter = 0;
+                            for(int i = 0; i < playerWonCards.size(); i ++){
+                                playerDeckList.add(playerWonCards.get(counter));
+                                counter ++;
+                            }
+                            playerWonCards.clear();
+                            if(playerDeckList.size() < 4){
+                                System.out.println("You don't have enough cards to draw!");
+                                System.out.println("You lost the war! Better luck next time!");
+                                System.exit(0);
+                            }
+                        }
+                        if(computerDeckList.size() < 4){
+                            shuffler(computerWonCards);
+                            int counter = 0;
+                            for(int i = 0; i < computerWonCards.size(); i ++){
+                                computerDeckList.add(computerWonCards.get(counter));
+                                counter ++;
+                            }
+                            computerWonCards.clear();
+                            if(computerDeckList.size() < 4){
+                                System.out.println("The computer doesn't have enough cards to draw!");
+                                System.out.println("You won the war! Congrats!");
+                                System.exit(0);
+                            }
+                        }
+                        Card playerRemovedCard1 = playerDeckList.remove(0);
+                        Card playerRemovedCard2 = playerDeckList.remove(0);
+                        Card playerRemovedCard3 = playerDeckList.remove(0);
+                        Card computerRemovedCard1 = computerDeckList.remove(0);
+                        Card computerRemovedCard2 = computerDeckList.remove(0);
+                        Card computerRemovedCard3 = computerDeckList.remove(0);
+                        Card newPlayerCard = playerDeckList.remove(0);
+                        System.out.println("You drew a " + newPlayerCard);
+                        Card newComputerCard = computerDeckList.remove(0);
+                        System.out.println("You drew a " + newComputerCard);
+                        winnerCards.add(playerRemovedCard1);
+                        winnerCards.add(playerRemovedCard2);
+                        winnerCards.add(playerRemovedCard3);
+                        winnerCards.add(computerRemovedCard1);
+                        winnerCards.add(computerRemovedCard2);
+                        winnerCards.add(computerRemovedCard3);
+                        winnerCards.add(newPlayerCard);
+                        winnerCards.add(newComputerCard);
+                        if (newPlayerCard.pointValue() > newComputerCard.pointValue()) {
+                            winnerCards.add(playerCard);
+                            winnerCards.add(computerCard);
+                            int counter = 0;
+                            for(int i = 0; i < winnerCards.size(); i ++){
+                                playerWonCards.add(winnerCards.get(counter));
+                                counter ++;
+                            }
+                            winnerCards.clear();
+                            int totalPlayerSize = playerDeckList.size() + playerWonCards.size();
+                            int totalComputerSize = computerDeckList.size() + computerWonCards.size();
+                            System.out.println("You won 10 cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
+                            finishedComparing = true;
+                        }else if (newPlayerCard.pointValue() < newComputerCard.pointValue()) {
+                            winnerCards.add(playerCard);
+                            winnerCards.add(computerCard);
+                            int counter = 0;
+                            for(int i = 0; i < winnerCards.size(); i ++){
+                                computerWonCards.add(winnerCards.get(counter));
+                                counter ++;
+                            }
+                            winnerCards.clear();
+                            int totalPlayerSize = playerDeckList.size() + playerWonCards.size();
+                            int totalComputerSize = computerDeckList.size() + computerWonCards.size();
+                            System.out.println("The Computer won 10 cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
+                            finishedComparing = true;
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println();
+        if(winner.equals("player")){
+            System.out.println("You won the war! Congrats!");
+        }else if(winner.equals("computer")){
+            System.out.println("You lost the war! Better luck next time!");
+        }
+    }
+
+    public static void shuffler(ArrayList<Card> cards){
+        for(int i = 0; i < 100; i ++){
+            if(cards.isEmpty()){
+                break;
+            }
+            int randNum1 = (int) (Math.random() * cards.size());
+            int randNum2 = (int) (Math.random() * cards.size());
+            Card temp = cards.get(randNum1);
+            cards.set(randNum1, cards.get(randNum2));
+            cards.set(randNum2, temp);
+        }
+    }
+
+}
