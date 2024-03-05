@@ -99,11 +99,6 @@ public class Main {
                         int totalPlayerSize = playerDeckList.size() + playerWonCards.size();
                         int totalComputerSize = computerDeckList.size() + computerWonCards.size();
                         System.out.println("You won 2 cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
-                        /* I used these print statements to check the cards in each list; they helped a lot with debugging */
-                        System.out.println("Player's current deck: " + playerDeckList);
-                        System.out.println("Computer's current deck: " + computerDeckList);
-                        System.out.println("Player's won deck: " + playerWonCards);
-                        System.out.println("Computer's won deck: " + computerWonCards);
                         finishedComparing = true;
                     } else if (playerCard.pointValue() < computerCard.pointValue()) {
                         computerWonCards.add(playerCard);
@@ -111,11 +106,6 @@ public class Main {
                         int totalPlayerSize = playerDeckList.size() + playerWonCards.size();
                         int totalComputerSize = computerDeckList.size() + computerWonCards.size();
                         System.out.println("The computer won 2 cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
-                        /* I used these print statements to check the cards in each list; they helped a lot with debugging */
-                        System.out.println("Player's current deck: " + playerDeckList);
-                        System.out.println("Computer's current deck: " + computerDeckList);
-                        System.out.println("Player's won deck: " + playerWonCards);
-                        System.out.println("Computer's won deck: " + computerWonCards);
                         finishedComparing = true;
                     } else if (playerCard.pointValue() == computerCard.pointValue()) {
                         System.out.println("Prepare for war!");
@@ -174,10 +164,11 @@ public class Main {
                                 playerWonCards.add(winnerCards.get(counter));
                                 counter ++;
                             }
+                            int cardsWon = winnerCards.size();
                             winnerCards.clear();
                             int totalPlayerSize = playerDeckList.size() + playerWonCards.size();
                             int totalComputerSize = computerDeckList.size() + computerWonCards.size();
-                            System.out.println("You won 10 cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
+                            System.out.println("You won " + cardsWon + " cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
                             finishedComparing = true;
                         }else if (newPlayerCard.pointValue() < newComputerCard.pointValue()) {
                             winnerCards.add(playerCard);
@@ -187,10 +178,11 @@ public class Main {
                                 computerWonCards.add(winnerCards.get(counter));
                                 counter ++;
                             }
+                            int cardsWon = winnerCards.size();
                             winnerCards.clear();
                             int totalPlayerSize = playerDeckList.size() + playerWonCards.size();
                             int totalComputerSize = computerDeckList.size() + computerWonCards.size();
-                            System.out.println("The Computer won 10 cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
+                            System.out.println("The Computer won " + cardsWon + " cards! Deck sizes: " + totalPlayerSize + " (yours) vs. " + totalComputerSize + " (computer's)");
                             finishedComparing = true;
                         }
                     }
